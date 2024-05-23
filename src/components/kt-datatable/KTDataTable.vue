@@ -71,6 +71,7 @@
           </button>
         </div>
         <div
+          v-if="isAdd"
           class="d-flex justify-content-end"
           data-kt-attribute-table-toolbar="base"
         >
@@ -149,6 +150,7 @@ export default defineComponent({
     filterOperation: { type: String, default: "or" },
     searchable: { type: Boolean, default: false },
     isExportable: { type: Boolean, default: true },
+    isAdd: { type: Boolean, default: true },
   },
   emits: [
     "page-change",

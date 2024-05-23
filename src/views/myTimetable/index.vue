@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title m-0">
-              <h3 class="fw-bold m-0">جدول المريض</h3>
+              <h3 class="fw-bold m-0">جدول الجلسات</h3>
             </div>
           </div>
           <div class="p-9">

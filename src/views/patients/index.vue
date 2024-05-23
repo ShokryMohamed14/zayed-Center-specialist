@@ -17,6 +17,7 @@
         :searchable="true"
         @on-page-size-change="onPageSizeChange"
         :isExportable="false"
+        :isAdd="false"
         :sort="sortOptions"
         @on-sort="handleSort"
       >
@@ -68,21 +69,6 @@
                 >
                   عرض
                 </router-link>
-              </div>
-              <!-- Link to edit user details -->
-              <div class="menu-item px-3">
-                <router-link
-                  class="menu-link px-3"
-                  :to="{ name: 'patients-edit', params: { id: data._id } }"
-                >
-                  تعديل
-                </router-link>
-              </div>
-              <!-- Button to delete user -->
-              <div class="menu-item px-3">
-                <a @click="submitDelete(data._id)" class="menu-link px-3">
-                  مسح
-                </a>
               </div>
             </div>
           </div>

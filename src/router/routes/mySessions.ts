@@ -14,8 +14,8 @@ const specialistSessionsRoutes: Array<RouteRecordRaw> = [
     name: "specialistSessions-list",
     component: List,
     meta: {
-      pageTitle: "قائمة المرضى",
-      breadcrumbs: ["المرضى "],
+      pageTitle: "جدول الجلسات",
+      breadcrumbs: ["جدولي "],
     },
   },
   // {

@@ -37,7 +37,7 @@ export const usePatientsStore = defineStore("patients", () => {
 
   async function fetchList() {
     try {
-      const { data } = await ApiService.query("patients", {
+      const { data } = await ApiService.query("patients/my-patients", {
         params: {
           page: params.value.page,
           limit: params.value.take,

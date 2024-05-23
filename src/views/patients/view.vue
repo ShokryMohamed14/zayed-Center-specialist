@@ -3,59 +3,40 @@
     <div id="kt_app_content_container" class="app-container container-fluid">
       <div class="card mb-5 mb-xl-10" id="kt_patients_details_view">
         <div class="card-header cursor-pointer">
-          <!--begin::Card title-->
           <div class="card-title m-0">
             <h3 class="fw-bold m-0">بيانات المريض</h3>
           </div>
-          <!--end::Card title-->
           <div>
-            <a
-              href="#"
-              class="btn btn-primary mt-3"
-              data-kt-menu-trigger="click"
-              data-kt-menu-attach="parent"
-              data-kt-menu-placement="bottom-end"
-            >
-              عمليات
-              <KTIcon icon-name="down" icon-class="fs-2 me-0" />
-            </a>
-            <div
-              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semobold py-4 w-100px fs-6"
-              data-kt-menu="true"
-            >
-              <div class="menu-item px-5">
-                <router-link
-                  :to="{
-                    name: 'patients-edit',
-                    params: { id: viewData.id },
-                  }"
-                  class="menu-link align-self-center"
-                  >تعديل</router-link
-                >
-              </div>
-              <div class="menu-item px-5">
-                <a
-                  @click="submitDelete()"
-                  href="#"
-                  class="menu-link align-self-center text-danger"
-                >
-                  مسح
-                </a>
-              </div>
-            </div>
+            <button @click="printData" class="btn btn-secondary mt-3">
+              طباعة البيانات
+            </button>
           </div>
         </div>
 
-        <!--begin::Card body-->
-        <div class="p-9">
-          <!--begin::Row-->
+        <div class="p-9" id="DataView">
           <div class="row mb-7">
             <div v-if="viewData" class="row">
-              <!-- Info: Left col -->
               <div class="col-12">
-                <div class="row">
+                <div class="row card-header" style="border: none">
+                  <div class="mb-3">
+                    <div class="image-preview">
+                      <label for="imageInput">
+                        <img
+                          :src="
+                            imageData ||
+                            `http://localhost:3000/img/patients/${viewData.photo}`
+                          "
+                          alt="Image Preview"
+                          v-if="imageData || viewData.photo !== 'default.jpg'"
+                        />
+                        <div v-else class="placeholder">لا يوجد صورة</div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-7">
+                  <!-- other info items -->
                   <div class="mb-3 col-lg-6">
-                    <!--username -->
                     <info-item
                       label="اسم المريض"
                       :data="viewData.name"
@@ -63,7 +44,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!--serial -->
                     <info-item
                       label="الرقم التسلسلي"
                       :data="viewData.serial"
@@ -71,7 +51,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- email -->
                     <info-item
                       label="العمر"
                       :data="viewData.age"
@@ -79,7 +58,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- role -->
                     <info-item
                       label="تاريخ الميلاد"
                       :data="viewData.birthday"
@@ -87,7 +65,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الرقم القومي"
                       :data="viewData.nationalId"
@@ -95,7 +72,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الفئة"
                       :data="viewData.degree"
@@ -103,7 +79,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الرتبة"
                       :data="viewData.rank"
@@ -111,7 +86,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="اسم الاب"
                       :data="viewData.fatherName"
@@ -119,7 +93,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الرقم القومي للاب"
                       :data="viewData.fatherId"
@@ -127,7 +100,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="اسم الام"
                       :data="viewData.motherName"
@@ -135,7 +107,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الرقم القومي للام"
                       :data="viewData.motherId"
@@ -143,7 +114,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="العنوان"
                       :data="viewData.address"
@@ -151,7 +121,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="الهاتف"
                       :data="viewData.phone"
@@ -159,7 +128,6 @@
                     />
                   </div>
                   <div class="mb-3 col-lg-6">
-                    <!-- id -->
                     <info-item
                       label="رقم الواتساب"
                       :data="viewData.whatsapp"
@@ -171,32 +139,36 @@
             </div>
           </div>
         </div>
-        <!--end::Card body-->
+
         <div class="card">
           <div class="card-header">
             <div class="card-title m-0">
-              <h3 class="fw-bold m-0">جدول المريض</h3>
+              <h3 class="fw-bold م-0">جدول المريض</h3>
             </div>
           </div>
           <div class="p-9">
             <div>
-              <div class="table-container">
+              <div class="table-container" id="TableData">
                 <div class="table-responsive">
-                  <table class="table table-bordered table-hover">
+                  <table
+                    ref="tableRef"
+                    class="table table-bordered table-hover"
+                  >
                     <thead>
                       <tr>
                         <th>الأيام</th>
-                        <!-- Week days column -->
                         <th v-for="(header, index) in tableHeader" :key="index">
                           {{ header }}
                         </th>
-                        <!-- Time slots -->
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(day, dayIndex) in weekDays" :key="dayIndex">
+                      <tr
+                        v-for="(day, dayIndex) in weekDays"
+                        :key="dayIndex"
+                        v-show="hasSessions[dayIndex]"
+                      >
                         <td>{{ day }}</td>
-                        <!-- Week days -->
                         <td
                           v-for="(session, sessionIndex) in sessionsTable[
                             dayIndex
@@ -205,7 +177,6 @@
                         >
                           {{ session }}
                         </td>
-                        <!-- Session data -->
                       </tr>
                     </tbody>
                   </table>
@@ -218,8 +189,9 @@
     </div>
   </section>
 </template>
+
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 import { usePatientsStore } from "@/stores/patients";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -227,17 +199,18 @@ import InfoItem from "@/components/info-item.vue";
 
 const store = usePatientsStore();
 const router = useRouter();
+const { proxy } = getCurrentInstance();
 const viewData = ref({});
 const sessions = ref([]);
+const imageData = ref<string | null>(null);
 const weekDays = ref([
   "السبت",
-  "الأحد",
+  "الاحد",
   "الاثنين",
   "الثلاثاء",
-  "الأربعاء",
+  "الاربعاء",
   "الخميس",
 ]);
-
 const tableHeader = ref([
   "09:00 - 09:30",
   "09:30 - 10:00",
@@ -249,25 +222,32 @@ const tableHeader = ref([
   "12:30 - 01:00",
   "01:00 - 01:30",
   "01:30 - 02:00",
+  // "02:00 - 02:30",
+  // "02:30 - 03:00",
+  // "03:00 - 03:30",
+  // "03:30 - 04:00",
+  // "04:00 - 04:30",
+  // "04:30 - 05:00",
 ]);
-
 const sessionsTable = ref(
-  Array.from({ length: weekDays.value.length }, () =>
-    Array(tableHeader.value.length).fill("")
+  new Array(weekDays.value.length)
+    .fill(null)
+    .map(() => new Array(tableHeader.value.length).fill(""))
+);
+
+const timeToIndex = (time) => {
+  const [hour, minute] = time.split(":").map(Number);
+  return (hour - 8) * 2 + (minute === 30 ? 1 : 0);
+};
+const hasSessions = computed(() =>
+  sessionsTable.value.map((daySessions) =>
+    daySessions.some((session) => session !== "")
   )
 );
 
-// Function to convert time string to index in the table header
-function timeToIndex(time: string): number {
-  let [hour, minute] = time.split(":").map(Number);
-  if (hour < 9) {
-    hour += 12; // Convert to 24-hour format
-  }
-  return (hour - 9) * 2 + (minute >= 30 ? 1 : 0);
-}
-
 const submitDelete = async () => {
   const confirmed = await Swal.fire({
+    title: "تنبيه!",
     text: "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
     icon: "warning",
     showCancelButton: true,
@@ -308,6 +288,55 @@ const submitDelete = async () => {
   }
 };
 
+const printData = async () => {
+  const containerId = "kt_app_content_container";
+  const container = document.getElementById(containerId);
+  if (container) {
+    // Hide the card headers temporarily
+    const cardHeaders = container.querySelectorAll(".card-header");
+    cardHeaders.forEach((header) => {
+      header.style.display = "none";
+    });
+
+    // Add a class to the container to cancel the card border in print
+    container.classList.add("cancel-card-border");
+
+    // Print the content inside the kt_app_content_container div
+    await proxy.$htmlToPaper(containerId);
+
+    // Restore the card headers and remove the cancel-card-border class after printing
+    cardHeaders.forEach((header) => {
+      header.style.display = "flex";
+    });
+    container.classList.remove("cancel-card-border");
+  } else {
+    console.error("Element not found!");
+  }
+};
+
+const previewImage = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const formData = new FormData();
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    formData.append("photo", input.files[0]);
+    reader.onload = (e) => {
+      imageData.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(input.files[0]);
+    store.uploadImage(formData, viewData.value._id);
+  }
+};
+const removeImage = async () => {
+  imageData.value = null;
+  await store.deletePhoto(viewData.value._id);
+  await store.fetchItem(router.currentRoute.value.params.id);
+  await store.getPatientSessions(router.currentRoute.value.params.id);
+  viewData.value = store.itemData;
+  sessions.value = store.patientSessions;
+  populateTable();
+};
+
 onMounted(async () => {
   await store.fetchItem(router.currentRoute.value.params.id);
   await store.getPatientSessions(router.currentRoute.value.params.id);
@@ -327,8 +356,7 @@ function populateTable() {
     const toIndex = timeToIndex(session.to);
     if (dayIndex !== -1 && fromIndex !== -1 && toIndex !== -1) {
       for (let i = fromIndex; i < toIndex; i++) {
-        sessionsTable.value[dayIndex][i] = session.department; // Change this to whatever session data you want to display
-        console.log(sessionsTable.value[dayIndex][i]);
+        sessionsTable.value[dayIndex][i] = session.department;
       }
     }
   });
@@ -336,22 +364,21 @@ function populateTable() {
 </script>
 
 <style scoped>
-/* Add your CSS styling here */
 .table-container {
-  overflow-x: auto; /* Enable horizontal scrolling */
-  max-width: 100%; /* Adjust the max-width as needed */
+  overflow-x: auto;
+  max-width: 100%;
   font-size: 15px;
 }
 
 .table-responsive {
-  overflow: auto; /* Ensure table content scrolls */
+  overflow: auto;
 }
 
 .table {
-  width: max-content; /* Set table width to max-content for horizontal scrolling */
+  width: max-content;
   background-color: transparent;
-  width: 100%; /* Set table width to 100% */
-  border-collapse: collapse; /* Collapse border spacing */
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table th,
@@ -359,7 +386,7 @@ function populateTable() {
   padding: 0.75rem;
   vertical-align: top;
   border-top: 1px solid #ebedf2;
-  white-space: wrap; /* Prevent text wrapping */
+  white-space: wrap;
   text-align: center;
   height: 65px;
 }
@@ -372,7 +399,7 @@ function populateTable() {
 }
 
 .submitted-name {
-  margin-bottom: 5px; /* Adjust the margin to separate the name from the bin icon */
+  margin-bottom: 5px;
 }
 
 .bin-icon {
@@ -383,12 +410,41 @@ function populateTable() {
   text-align: center;
 }
 
-/* Increase font size of button and dropdown text */
 .el-button,
 .el-dropdown-item {
   font-size: 16px;
   padding: 20px;
 }
 
-/* Your existing CSS styles for .table, .table th, .table td, etc. */
+.image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.image-preview img {
+  width: 200px; /* Fixed width */
+  height: 200px; /* Fixed height */
+  object-fit: cover; /* Ensures the image covers the container without distorting */
+  border-radius: 50%; /* Makes the image circular */
+  display: block;
+}
+
+.image-preview .placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9ecef;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.image-preview button {
+  margin-top: 10px;
+}
 </style>
