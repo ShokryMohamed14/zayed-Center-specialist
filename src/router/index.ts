@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import patientsRoutes from "./routes/patients";
 import specialistSessionsRoutes from "./routes/mySessions";
+import notebookRoutes from "./routes/notebook";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +29,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       ...patientsRoutes,
       ...specialistSessionsRoutes,
+      ...notebookRoutes,
     ],
   },
   {

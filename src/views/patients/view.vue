@@ -185,19 +185,55 @@
             </div>
           </div>
         </div>
+        <div class="container">
+          <div class="row mt-5">
+            <div
+              class="col-md-3 mb-4 card-header"
+              v-for="notebook in patientNotebooks"
+              :key="notebook._id"
+            >
+              <el-card
+                style="cursor: pointer"
+                class="box-card"
+                @click="downloadFile(notebook)"
+              >
+                <p>
+                  <strong>القسم :</strong>
+                  <i class="fas fa-file-alt"></i> {{ notebook.department }}
+                </p>
+                <p>
+                  <strong>اخر تعديل بتاريخ :</strong>
+                  {{ new Date(notebook.modifiedAt).toLocaleString() }}
+                </p>
+              </el-card>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  getCurrentInstance,
+  computed,
+  normalizeClass,
+} from "vue";
 import { usePatientsStore } from "@/stores/patients";
+import { useNotebooksStore } from "@/stores/notebook";
+import { storeToRefs } from "pinia";
+
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import InfoItem from "@/components/info-item.vue";
 
 const store = usePatientsStore();
+const storeNotebook = useNotebooksStore();
+const { patientNotebooks } = storeToRefs(storeNotebook);
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const viewData = ref({});
@@ -244,7 +280,14 @@ const hasSessions = computed(() =>
     daySessions.some((session) => session !== "")
   )
 );
-
+const downloadFile = (notebook: any) => {
+  const link = document.createElement("a");
+  link.href = `http://localhost:3000/notebooks/${notebook.filename}`;
+  link.download = notebook.filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 const submitDelete = async () => {
   const confirmed = await Swal.fire({
     title: "تنبيه!",
@@ -340,6 +383,7 @@ const removeImage = async () => {
 onMounted(async () => {
   await store.fetchItem(router.currentRoute.value.params.id);
   await store.getPatientSessions(router.currentRoute.value.params.id);
+  await storeNotebook.fetchList(router.currentRoute.value.params.id);
   viewData.value = store.itemData;
   sessions.value = store.patientSessions;
   populateTable();
@@ -446,5 +490,15 @@ function populateTable() {
 
 .image-preview button {
   margin-top: 10px;
+}
+.box-card {
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.box-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 </style>

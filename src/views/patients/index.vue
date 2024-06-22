@@ -70,6 +70,14 @@
                   عرض
                 </router-link>
               </div>
+              <div class="menu-item px-3">
+                <router-link
+                  class="menu-link px-3"
+                  :to="{ name: 'notebook-list', params: { id: data._id } }"
+                >
+                  الكراسات
+                </router-link>
+              </div>
             </div>
           </div>
         </template>
