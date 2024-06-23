@@ -1,9 +1,19 @@
 <template>
   <div>
     <el-card v-if="itemData && itemData._id" class="box-card">
-      <p>File: {{ itemData.filename }}</p>
-      <el-button type="primary" @click="downloadFile">Download</el-button>
-      <el-button type="danger" @click="deleteFile">Delete</el-button>
+      <div class="file-info">
+        <h3>الكراسة</h3>
+        <p><strong>الاسم : </strong> {{ itemData.filename }}</p>
+        <!-- Add more file details here as needed -->
+      </div>
+      <div class="file-actions">
+        <el-button type="primary" icon="el-icon-download" @click="downloadFile"
+          >تحميل</el-button
+        >
+        <el-button type="danger" icon="el-icon-delete" @click="deleteFile"
+          >مسح</el-button
+        >
+      </div>
     </el-card>
     <div v-else>
       <el-upload
@@ -85,5 +95,19 @@ const uploadFile = async (params) => {
 <style lang="scss" scoped>
 .box-card {
   margin: 20px;
+  .file-info {
+    margin-bottom: 20px;
+    h3 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+  .file-actions {
+    display: flex;
+    gap: 10px;
+  }
 }
 </style>

@@ -75,7 +75,7 @@
                   class="menu-link px-3"
                   :to="{ name: 'notebook-list', params: { id: data._id } }"
                 >
-                  الكراسات
+                  الكراسة
                 </router-link>
               </div>
             </div>

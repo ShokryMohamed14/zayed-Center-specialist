@@ -185,27 +185,34 @@
             </div>
           </div>
         </div>
-        <div class="container">
-          <div class="row mt-5">
-            <div
-              class="col-md-3 mb-4 card-header"
-              v-for="notebook in patientNotebooks"
-              :key="notebook._id"
-            >
-              <el-card
-                style="cursor: pointer"
-                class="box-card"
-                @click="downloadFile(notebook)"
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title m-0">
+              <h3 class="fw-bold م-0">الكراسات</h3>
+            </div>
+          </div>
+          <div class="container">
+            <div class="row mt-5">
+              <div
+                class="col-md-3 mb-4 card-header"
+                v-for="notebook in patientNotebooks"
+                :key="notebook._id"
               >
-                <p>
-                  <strong>القسم :</strong>
-                  <i class="fas fa-file-alt"></i> {{ notebook.department }}
-                </p>
-                <p>
-                  <strong>اخر تعديل بتاريخ :</strong>
-                  {{ new Date(notebook.modifiedAt).toLocaleString() }}
-                </p>
-              </el-card>
+                <el-card
+                  style="cursor: pointer"
+                  class="box-card"
+                  @click="downloadFile(notebook)"
+                >
+                  <p>
+                    <strong>القسم :</strong>
+                    <i class="fas fa-file-alt"></i> {{ notebook.department }}
+                  </p>
+                  <p>
+                    <strong>اخر تعديل بتاريخ :</strong>
+                    {{ new Date(notebook.modifiedAt).toLocaleString() }}
+                  </p>
+                </el-card>
+              </div>
             </div>
           </div>
         </div>
