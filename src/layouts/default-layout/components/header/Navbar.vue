@@ -44,7 +44,7 @@
         data-kt-menu-placement="bottom-end"
       >
         <img
-          :src="getAssetPath('media/avatars/300-3.jpg')"
+          :src="getAssetPath('media/avatars/blank.png')"
           class="rounded-3"
           alt="user"
         />
@@ -72,17 +72,17 @@
 </template>
 
 <script lang="ts">
-import { getAssetPath } from "@/core/helpers/assets";
-import { computed, defineComponent } from "vue";
-import KTSearch from "@/layouts/default-layout/components/search/Search.vue";
-import KTNotificationMenu from "@/layouts/default-layout/components/menus/NotificationsMenu.vue";
-import KTUserMenu from "@/layouts/default-layout/components/menus/UserAccountMenu.vue";
-import KTThemeModeSwitcher from "@/layouts/default-layout/components/theme-mode/ThemeModeSwitcher.vue";
-import { ThemeModeComponent } from "@/assets/ts/layout";
-import { useThemeStore } from "@/stores/theme";
+import { getAssetPath } from '@/core/helpers/assets';
+import { computed, defineComponent } from 'vue';
+import KTSearch from '@/layouts/default-layout/components/search/Search.vue';
+import KTNotificationMenu from '@/layouts/default-layout/components/menus/NotificationsMenu.vue';
+import KTUserMenu from '@/layouts/default-layout/components/menus/UserAccountMenu.vue';
+import KTThemeModeSwitcher from '@/layouts/default-layout/components/theme-mode/ThemeModeSwitcher.vue';
+import { ThemeModeComponent } from '@/assets/ts/layout';
+import { useThemeStore } from '@/stores/theme';
 
 export default defineComponent({
-  name: "header-navbar",
+  name: 'header-navbar',
   components: {
     KTSearch,
     KTNotificationMenu,
@@ -93,7 +93,7 @@ export default defineComponent({
     const store = useThemeStore();
 
     const themeMode = computed(() => {
-      if (store.mode === "system") {
+      if (store.mode === 'system') {
         return ThemeModeComponent.getSystemMode();
       }
       return store.mode;

@@ -15,7 +15,7 @@
       <!--begin::Heading-->
       <div class="text-center mb-10">
         <!--begin::Title-->
-        <h1 class="text-gray-900 mb-3">تسجيل الدخول</h1>
+        <h1 class="text-gray-900 mb-3">تسجيل دخول اخصائي</h1>
         <!--end::Title-->
       </div>
       <!--begin::Heading-->
@@ -109,16 +109,16 @@
 </template>
 
 <script lang="ts">
-import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref } from "vue";
-import { ErrorMessage, Field, Form as VForm } from "vee-validate";
-import { useAuthStore, type User } from "@/stores/auth";
-import { useRouter } from "vue-router";
-import Swal from "sweetalert2/dist/sweetalert2.js";
-import * as Yup from "yup";
+import { getAssetPath } from '@/core/helpers/assets';
+import { defineComponent, ref } from 'vue';
+import { ErrorMessage, Field, Form as VForm } from 'vee-validate';
+import { useAuthStore, type User } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import * as Yup from 'yup';
 
 export default defineComponent({
-  name: "sign-in",
+  name: 'sign-in',
   components: {
     Field,
     VForm,
@@ -132,8 +132,8 @@ export default defineComponent({
 
     //Create form validation object
     const login = Yup.object().shape({
-      username: Yup.string().required().label("username"),
-      password: Yup.string().required().label("Password"),
+      username: Yup.string().required().label('username'),
+      password: Yup.string().required().label('Password'),
     });
 
     //Form submit function
@@ -144,64 +144,64 @@ export default defineComponent({
 
       if (submitButton.value) {
         submitButton.value.disabled = true;
-        submitButton.value.setAttribute("data-kt-indicator", "on");
+        submitButton.value.setAttribute('data-kt-indicator', 'on');
       }
 
       try {
         const userData = await store.login(values);
         const error = Object.values(store.errors);
 
-        console.log("🚀 ~ onSubmitLogin ~ userData:", userData);
-        if (userData.data.user.role != "اخصائي") {
-          error.push("لا تمتلك الصلاحيات الكافية لتسجيل الدخول");
+        console.log('🚀 ~ onSubmitLogin ~ userData:', userData);
+        if (userData.data.user.role != 'اخصائي') {
+          error.push('لا تمتلك الصلاحيات الكافية لتسجيل الدخول');
           Swal.fire({
-            text: error[0] || "لا تمتلك الصلاحيات الكافية لتسجيل الدخول",
-            icon: "error",
+            text: error[0] || 'لا تمتلك الصلاحيات الكافية لتسجيل الدخول',
+            icon: 'error',
             buttonsStyling: false,
-            confirmButtonText: "حسناً",
+            confirmButtonText: 'حسناً',
             heightAuto: false,
             customClass: {
-              confirmButton: "btn fw-semobold btn-light-primary",
+              confirmButton: 'btn fw-semobold btn-light-primary',
             },
           });
           return;
         }
         console.log(
-          "🚀 ~ file: SignIn.vue:210 ~ onSubmitLogin ~ error:",
+          '🚀 ~ file: SignIn.vue:210 ~ onSubmitLogin ~ error:',
           error
         );
 
         if (error.length === 0) {
           Swal.fire({
-            text: "تم تسجيل الدخول بنجاح!",
-            icon: "success",
+            text: 'تم تسجيل الدخول بنجاح!',
+            icon: 'success',
             buttonsStyling: false,
-            confirmButtonText: "حسناً",
+            confirmButtonText: 'حسناً',
             heightAuto: false,
             customClass: {
-              confirmButton: "btn fw-semobold btn-light-primary",
+              confirmButton: 'btn fw-semobold btn-light-primary',
             },
           }).then(async () => {
             // Go to page after successful login
-            router.push({ name: "dashboard" });
+            router.push({ name: 'dashboard' });
             // await store.getPermissions(userData.role);
           });
         }
       } catch (error) {
-        console.error("An error occurred during login:", error);
+        console.error('An error occurred during login:', error);
         Swal.fire({
-          text: error[0] || "حدث خطأ أثناء تسجيل الدخول ",
-          icon: "error",
+          text: error[0] || 'حدث خطأ أثناء تسجيل الدخول ',
+          icon: 'error',
           buttonsStyling: false,
-          confirmButtonText: "حسناً",
+          confirmButtonText: 'حسناً',
           heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
+            confirmButton: 'btn fw-semobold btn-light-primary',
           },
         });
       } finally {
         if (submitButton.value) {
-          submitButton.value.removeAttribute("data-kt-indicator");
+          submitButton.value.removeAttribute('data-kt-indicator');
           submitButton.value.disabled = false;
         }
       }
