@@ -483,8 +483,8 @@ function populateTable() {
 }
 
 .image-preview .placeholder {
-  width: 100px;
-  height: 100px;
+  width: 200px; /* Fixed width */
+  height: 200px; /* Fixed height */
   border-radius: 50%;
   display: flex;
   align-items: center;
