@@ -56,7 +56,12 @@ export default defineComponent({
       modelName.value = props.attribute.api;
       try {
         const response = await axios.get(
-          `${import.meta.env.BASE_URL + modelName.value}`
+          `${import.meta.env.BASE_URL + modelName.value}`,
+          {
+            params: {
+              limit: 999999, // Assuming bignumber is defined elsewhere
+            },
+          }
         );
         ArrayData.value = response.data.data.results;
       } catch (error) {
