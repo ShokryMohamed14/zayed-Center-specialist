@@ -19,6 +19,9 @@
             <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2"
               >اخصائي</span
             >
+            <span>
+              {{ user?.data?.user?.username }}
+            </span>
           </div>
           <a
             href="#"
@@ -160,54 +163,57 @@
 </template>
 
 <script lang="ts">
-import { getAssetPath } from '@/core/helpers/assets';
-import { computed, defineComponent } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
+import { getAssetPath } from "@/core/helpers/assets";
+import { computed, defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  name: 'kt-user-menu',
+  name: "kt-user-menu",
   components: {},
   setup() {
     const router = useRouter();
     const i18n = useI18n();
     const store = useAuthStore();
+    const user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user") as string)
+      : null;
 
-    i18n.locale.value = localStorage.getItem('lang')
-      ? (localStorage.getItem('lang') as string)
-      : 'en';
+    i18n.locale.value = localStorage.getItem("lang")
+      ? (localStorage.getItem("lang") as string)
+      : "en";
 
     const countries = {
       en: {
-        flag: getAssetPath('media/flags/united-states.svg'),
-        name: 'English',
+        flag: getAssetPath("media/flags/united-states.svg"),
+        name: "English",
       },
       es: {
-        flag: getAssetPath('media/flags/spain.svg'),
-        name: 'Spanish',
+        flag: getAssetPath("media/flags/spain.svg"),
+        name: "Spanish",
       },
       de: {
-        flag: getAssetPath('media/flags/germany.svg'),
-        name: 'German',
+        flag: getAssetPath("media/flags/germany.svg"),
+        name: "German",
       },
       ja: {
-        flag: getAssetPath('media/flags/japan.svg'),
-        name: 'Japanese',
+        flag: getAssetPath("media/flags/japan.svg"),
+        name: "Japanese",
       },
       fr: {
-        flag: getAssetPath('media/flags/france.svg'),
-        name: 'French',
+        flag: getAssetPath("media/flags/france.svg"),
+        name: "French",
       },
     };
 
     const signOut = () => {
       store.logout();
-      router.push({ name: 'sign-in' });
+      router.push({ name: "sign-in" });
     };
 
     const setLang = (lang: string) => {
-      localStorage.setItem('lang', lang);
+      localStorage.setItem("lang", lang);
       i18n.locale.value = lang;
     };
 
@@ -226,6 +232,7 @@ export default defineComponent({
       currentLangugeLocale,
       countries,
       getAssetPath,
+      user,
     };
   },
 });
