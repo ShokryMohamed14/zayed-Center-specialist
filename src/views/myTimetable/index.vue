@@ -29,12 +29,23 @@
                           <td>{{ day }}</td>
                           <!-- Week days -->
                           <td
-                            v-for="(session, sessionIndex) in sessionsTable[
+                            v-for="(sessions, sessionIndex) in sessionsTable[
                               dayIndex
                             ]"
                             :key="sessionIndex"
                           >
-                            {{ session }}
+                            <div
+                              v-for="(session, sessionInnerIndex) in sessions"
+                              :key="session._id"
+                            >
+                              <span>{{ session.patient.name }}</span>
+                              <template
+                                v-if="sessionInnerIndex < sessions.length - 1"
+                              >
+                                <br />
+                                <hr class="session-separator" />
+                              </template>
+                            </div>
                           </td>
                           <!-- Session data -->
                         </tr>
@@ -50,10 +61,10 @@
     </div>
   </section>
 </template>
+
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useSpecialistSessionsStore } from "@/stores/specialistSessions";
-import { useRouter } from "vue-router";
 const store = useSpecialistSessionsStore();
 
 const sessions = ref([]);
@@ -81,7 +92,7 @@ const tableHeader = ref([
 
 const sessionsTable = ref(
   Array.from({ length: weekDays.value.length }, () =>
-    Array(tableHeader.value.length).fill("")
+    Array.from({ length: tableHeader.value.length }, () => [])
   )
 );
 
@@ -115,7 +126,9 @@ function populateTable() {
     console.log("To Index:", toIndex);
     if (dayIndex !== -1 && fromIndex !== -1 && toIndex !== -1) {
       for (let i = fromIndex; i < toIndex; i++) {
-        sessionsTable.value[dayIndex][i] = session.patient.name;
+        if (!sessionsTable.value[dayIndex][i].includes(session)) {
+          sessionsTable.value[dayIndex][i].push(session);
+        }
       }
     }
     console.log("Updated sessionsTable:", sessionsTable.value);
@@ -169,6 +182,13 @@ function populateTable() {
 
 .bin-icon-container {
   text-align: center;
+}
+
+/* Separator styling */
+.session-separator {
+  margin: 5px 0;
+  border: 0;
+  border-top: 1px solid #eee;
 }
 
 /* Increase font size of button and dropdown text */
