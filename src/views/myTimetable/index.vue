@@ -12,44 +12,45 @@
             <div>
               <div class="table-container">
                 <div class="table-responsive">
-                  <table class="table table-bordered table-hover">
+                  <table
+                    ref="tableRef"
+                    class="table table-bordered table-hover"
+                  >
                     <thead>
                       <tr>
                         <th>الأيام</th>
-                        <!-- Week days column -->
                         <th v-for="(header, index) in tableHeader" :key="index">
                           {{ header }}
                         </th>
-                        <!-- Time slots -->
                       </tr>
                     </thead>
                     <tbody>
-                      <template v-for="(day, dayIndex) in weekDays">
-                        <tr>
-                          <td>{{ day }}</td>
-                          <!-- Week days -->
+                      <tr v-for="(day, dayIndex) in weekDays" :key="dayIndex">
+                        <td>{{ day }}</td>
+                        <template
+                          v-for="(session, sessionIndex) in sessionsTable[
+                            dayIndex
+                          ]"
+                          :key="sessionIndex"
+                        >
                           <td
-                            v-for="(sessions, sessionIndex) in sessionsTable[
-                              dayIndex
-                            ]"
-                            :key="sessionIndex"
+                            v-if="session.department"
+                            :colspan="session.colspan"
                           >
-                            <div
-                              v-for="(session, sessionInnerIndex) in sessions"
-                              :key="session._id"
-                            >
-                              <span>{{ session.patient.name }}</span>
-                              <template
-                                v-if="sessionInnerIndex < sessions.length - 1"
-                              >
-                                <br />
-                                <hr class="session-separator" />
-                              </template>
-                            </div>
+                            {{ session.patient }} <br />
+                            <span class="user-icon">{{
+                              session.specialist
+                            }}</span>
                           </td>
-                          <!-- Session data -->
-                        </tr>
-                      </template>
+                          <td
+                            v-else-if="
+                              !session.department && session.colspan === 1
+                            "
+                          >
+                            &nbsp;
+                          </td>
+                        </template>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -77,18 +78,7 @@ const weekDays = ref([
   "الخميس",
 ]);
 
-const tableHeader = ref([
-  "09:00 - 09:30",
-  "09:30 - 10:00",
-  "10:00 - 10:30",
-  "10:30 - 11:00",
-  "11:00 - 11:30",
-  "11:30 - 12:00",
-  "12:00 - 12:30",
-  "12:30 - 01:00",
-  "01:00 - 01:30",
-  "01:30 - 02:00",
-]);
+const tableHeader = ref<string[]>([]);
 
 const sessionsTable = ref(
   Array.from({ length: weekDays.value.length }, () =>
@@ -106,6 +96,7 @@ function timeToIndex(time: string): number {
 }
 
 onMounted(async () => {
+  generateTableHeader();
   await store.fetchList();
   sessions.value = store.ListData;
   populateTable();
@@ -115,23 +106,58 @@ onUnmounted(() => {
   //   store.resetItemData();
 });
 
+const generateTableHeader = () => {
+  const startTime = "09:00";
+  const endTime = "14:00";
+  const interval = 15; // minutes
+  const headers = [];
+  let currentTime = new Date(`1970-01-01T${startTime}:00`);
+  const endTimeDate = new Date(`1970-01-01T${endTime}:00`);
+
+  while (currentTime < endTimeDate) {
+    let hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    hours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+    headers.push(formattedTime);
+    currentTime.setMinutes(currentTime.getMinutes() + interval);
+  }
+
+  tableHeader.value = headers;
+};
+
 function populateTable() {
+  // Clear the table first
+  sessionsTable.value = weekDays.value.map(() =>
+    Array(tableHeader.value.length).fill({ department: "", colspan: 1 })
+  );
+
   sessions.value.forEach((session) => {
-    console.log("Processing session:", session);
     const dayIndex = weekDays.value.findIndex((day) => day === session.day);
     const fromIndex = timeToIndex(session.from);
     const toIndex = timeToIndex(session.to);
-    console.log("Day Index:", dayIndex);
-    console.log("From Index:", fromIndex);
-    console.log("To Index:", toIndex);
+
     if (dayIndex !== -1 && fromIndex !== -1 && toIndex !== -1) {
-      for (let i = fromIndex; i < toIndex; i++) {
-        if (!sessionsTable.value[dayIndex][i].includes(session)) {
-          sessionsTable.value[dayIndex][i].push(session);
+      // Determine the colspan based on department
+      const colspan = session.department === "منتسوري" ? 3 : 2;
+
+      // Place the session in the correct slot
+      sessionsTable.value[dayIndex][fromIndex] = {
+        department: session.department,
+        colspan,
+        patient: session.patient.name,
+        specialist: session.specialist.username,
+      };
+
+      // Clear the remaining slots in the time range
+      for (let i = fromIndex + 1; i < fromIndex + colspan; i++) {
+        if (i < tableHeader.value.length) {
+          sessionsTable.value[dayIndex][i] = { department: "", colspan: 2 };
         }
       }
     }
-    console.log("Updated sessionsTable:", sessionsTable.value);
   });
 }
 </script>

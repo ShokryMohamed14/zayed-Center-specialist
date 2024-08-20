@@ -169,14 +169,26 @@
                         v-show="hasSessions[dayIndex]"
                       >
                         <td>{{ day }}</td>
-                        <td
+                        <template
                           v-for="(session, sessionIndex) in sessionsTable[
                             dayIndex
                           ]"
                           :key="sessionIndex"
                         >
-                          {{ session }}
-                        </td>
+                          <td
+                            v-if="session.department"
+                            :colspan="session.colspan"
+                          >
+                            {{ session.department }}
+                          </td>
+                          <td
+                            v-else-if="
+                              !session.department && session.colspan === 1
+                            "
+                          >
+                            &nbsp;
+                          </td>
+                        </template>
                       </tr>
                     </tbody>
                   </table>
@@ -254,37 +266,57 @@ const weekDays = ref([
   "الاربعاء",
   "الخميس",
 ]);
-const tableHeader = ref([
-  "09:00 - 09:30",
-  "09:30 - 10:00",
-  "10:00 - 10:30",
-  "10:30 - 11:00",
-  "11:00 - 11:30",
-  "11:30 - 12:00",
-  "12:00 - 12:30",
-  "12:30 - 01:00",
-  "01:00 - 01:30",
-  "01:30 - 02:00",
-  // "02:00 - 02:30",
-  // "02:30 - 03:00",
-  // "03:00 - 03:30",
-  // "03:30 - 04:00",
-  // "04:00 - 04:30",
-  // "04:30 - 05:00",
-]);
+const tableHeader = ref<string[]>([]);
+
+const generateTableHeader = () => {
+  const startTime = "09:00";
+  const endTime = "14:00";
+  const interval = 15; // minutes
+  const headers = [];
+  let currentTime = new Date(`1970-01-01T${startTime}:00`);
+  const endTimeDate = new Date(`1970-01-01T${endTime}:00`);
+
+  while (currentTime < endTimeDate) {
+    let hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    hours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+    headers.push(formattedTime);
+    currentTime.setMinutes(currentTime.getMinutes() + interval);
+  }
+
+  tableHeader.value = headers;
+};
 const sessionsTable = ref(
   new Array(weekDays.value.length)
     .fill(null)
-    .map(() => new Array(tableHeader.value.length).fill(""))
+    .map(() =>
+      new Array(tableHeader.value.length).fill({ department: "", colspan: 1 })
+    )
 );
 
 const timeToIndex = (time) => {
-  const [hour, minute] = time.split(":").map(Number);
-  return (hour - 8) * 2 + (minute === 30 ? 1 : 0);
+  let [hour, minute] = time.split(":").map(Number);
+
+  // Convert 12-hour format to 24-hour format by ignoring AM/PM
+  if (hour === 12) {
+    hour = 0; // Treat 12 as 0
+  }
+
+  // Adjust for 12-hour format where 1 PM (13:00) should be treated as 1 PM (01:00)
+  if (hour >= 1 && hour <= 8) {
+    hour += 12; // Convert 1-8 to 13-20
+  }
+
+  // Calculate the index based on 12-hour time format
+  return (hour - 9) * 4 + minute / 15;
 };
+
 const hasSessions = computed(() =>
   sessionsTable.value.map((daySessions) =>
-    daySessions.some((session) => session !== "")
+    daySessions.some((session) => session.department !== "")
   )
 );
 const downloadFile = (notebook: any) => {
@@ -388,6 +420,7 @@ const removeImage = async () => {
 };
 
 onMounted(async () => {
+  generateTableHeader();
   await store.fetchItem(router.currentRoute.value.params.id);
   await store.getPatientSessions(router.currentRoute.value.params.id);
   await storeNotebook.fetchList(router.currentRoute.value.params.id);
@@ -401,13 +434,31 @@ onUnmounted(() => {
 });
 
 function populateTable() {
+  // Clear the table first
+  sessionsTable.value = weekDays.value.map(() =>
+    Array(tableHeader.value.length).fill({ department: "", colspan: 1 })
+  );
+
   sessions.value.forEach((session) => {
     const dayIndex = weekDays.value.findIndex((day) => day === session.day);
     const fromIndex = timeToIndex(session.from);
     const toIndex = timeToIndex(session.to);
+
     if (dayIndex !== -1 && fromIndex !== -1 && toIndex !== -1) {
-      for (let i = fromIndex; i < toIndex; i++) {
-        sessionsTable.value[dayIndex][i] = session.department;
+      // Determine the colspan based on department
+      const colspan = session.department === "منتسوري" ? 3 : 2;
+
+      // Place the session in the correct slot
+      sessionsTable.value[dayIndex][fromIndex] = {
+        department: session.department,
+        colspan,
+      };
+
+      // Clear the remaining slots in the time range
+      for (let i = fromIndex + 1; i < fromIndex + colspan; i++) {
+        if (i < tableHeader.value.length) {
+          sessionsTable.value[dayIndex][i] = { department: "", colspan: 2 };
+        }
       }
     }
   });
