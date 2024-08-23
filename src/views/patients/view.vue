@@ -300,17 +300,14 @@ const sessionsTable = ref(
 const timeToIndex = (time) => {
   let [hour, minute] = time.split(":").map(Number);
 
-  // Convert 12-hour format to 24-hour format by ignoring AM/PM
+  // Convert 12-hour format to 24-hour format assuming a working hour range from 9 AM to 2 PM
   if (hour === 12) {
-    hour = 0; // Treat 12 as 0
+    hour = 12; // Keep 12 as is to represent noon
+  } else if (hour >= 1 && hour <= 8) {
+    hour += 12; // Treat 1 PM to 8 PM as 13:00 to 20:00
   }
 
-  // Adjust for 12-hour format where 1 PM (13:00) should be treated as 1 PM (01:00)
-  if (hour >= 1 && hour <= 8) {
-    hour += 12; // Convert 1-8 to 13-20
-  }
-
-  // Calculate the index based on 12-hour time format
+  // Calculate the index based on the 12-hour format, starting from 9 AM
   return (hour - 9) * 4 + minute / 15;
 };
 

@@ -87,13 +87,24 @@ const sessionsTable = ref(
 );
 
 // Function to convert time string to index in the table header
-function timeToIndex(time: string): number {
+const timeToIndex = (time) => {
   let [hour, minute] = time.split(":").map(Number);
-  if (hour < 9) {
-    hour += 12; // Convert to 24-hour format
+
+  // Correctly interpret the 12-hour format by considering the table's start time
+  // Assume your sessions run from 09:00 AM to 02:00 PM
+  // So 09:00 means 9 AM, 01:00 means 1 PM (if ignoring AM/PM)
+
+  // Treat 12 as noon (e.g., 12:30 means 12:30 PM)
+  // If time is "01:00", treat it as 1 PM, considering it in the afternoon context
+  if (hour === 12) {
+    hour = 12; // Noon case, keep as 12
+  } else if (hour < 9) {
+    hour += 12; // Treating it as PM if it's less than 9 (e.g., 1 -> 13, 2 -> 14)
   }
-  return (hour - 9) * 2 + (minute >= 30 ? 1 : 0);
-}
+
+  // Calculate the index based on 12-hour time format
+  return (hour - 9) * 4 + minute / 15;
+};
 
 onMounted(async () => {
   generateTableHeader();
